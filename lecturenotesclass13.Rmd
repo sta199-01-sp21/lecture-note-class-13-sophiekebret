@@ -1,6 +1,6 @@
 ---
 title: "Simulation-based inference - confidence intervals"
-author: ""
+author: "Sophie Kebret"
 date: "March 3, 2021"
 output: html_document
 editor_options: 
