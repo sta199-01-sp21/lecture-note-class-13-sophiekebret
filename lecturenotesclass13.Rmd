@@ -189,7 +189,7 @@ Consider 20 1-bedroom apartments that were randomly selected on
 Craigslist Manhattan from apartments listed as "by owner".
 
 ```{r data_manhattan}
-manhattan <- read_csv("~/manhattan.csv")
+manhattan <- read_csv("~/R/lecture-note-class-13-sophiekebret/manhattan.csv")
 ```
 
 Consider 3-10 day survival of mice randomized to various
@@ -250,10 +250,10 @@ Create a 95% bootstrap confidence interval for the population *mean* price of
 
 First, identify the following:
 
-- Population: 
-- Parameter of interest:
-- Sample:
-- Sample size:
+- Population: 1 bedroom apartments in Manhattan
+- Parameter of interest: Mean price
+- Sample: 1 bedroom apartment
+- Sample size: 20
 
 To create our confidence interval, we'll follow the four-step bootstrap
 scheme outlined in the slides using functions from `infer`.
@@ -339,7 +339,11 @@ population *median* price of 1-bedroom apartments in Manhattan. Do this in a
 single code chunk with a single pipeline. Provide an interpretation of your result.
 
 ```{r practice_1}
-
+manhattan %>%
+  specify(response=rent) %>%
+  generate(reps=10000, type="bootstrap") %>%
+  calculate(stat = "median") %>%
+  get_ci(level=.95)
 ```
 
 ### A confidence interval for the population proportion - $p$
@@ -348,10 +352,10 @@ Consider the mice radiation dataset. Suppose we want to compute a 95% confidence
 
 First, identify the following:
 
-- Population: 
-- Parameter of interest:
-- Sample:
-- Sample size:
+- Population: mice not on treatment
+- Parameter of interest: proportion 
+- Sample: mice that died while not on treatment
+- Sample size: 522
 
 ```{r boot_mice}
 boot_prop <- mice %>% 
@@ -381,17 +385,25 @@ visualise(boot_prop) +
 Consider the mice radiation results. Suppose we want to compute a 90% confidence interval for the proportion of mice that lived while on the treatment, regardless of the dose.
 
 ```{r practice_2_bootstrap}
-
+mice_boot <- mice %>% 
+  filter(treat == 1) %>%
+  mutate(died = if_else(died == 0, "no", "yes")) %>% 
+  specify(response = died, success = "no") %>%
+  generate(reps = 10000, type = "bootstrap") %>% 
+  calculate(stat = "prop")
+mice_boot
 ```
 
 ```{r practice_2_ci}
-
+ci_mice_live <- get_ci(mice_boot, level=.9)
+ci_mice_live
 ```
 
-Visualizing our Resuts:
+Visualizing our Results:
 
 ```{r practice_2_visualize}
-
+visualise(mice_boot) +
+  shade_ci(ci_mice_live)
 ```
 
 
